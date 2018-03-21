@@ -65,6 +65,56 @@ public:
     }
 };
 
+class Data{
+
+private:
+    vvs data;
+    vector<int> u_x;
+    vector<int> u_y;
+
+public:
+    Data(string file)
+    {
+        ifstream infile(file);
+        string line;
+        if(infile.is_open())
+        {
+            while(getline(infile, line))
+            {
+                  stringstream ss;
+                  ss.str(line);
+                  vector<string> temp;
+                  string value;
+                  while(ss >> value)
+                    temp.push_back(value);
+
+                  (this->data).push_back(temp);
+
+            }
+            infile.close();
+        }
+
+        for(int i=0; i<data.size(); i++)
+            for(int j=0; j<data.size(); j++)
+            {
+                u_x.push_back(i);
+                u_x.push_back(j);
+            }
+    }
+
+    void print()
+    {
+        for(int i=0; i<data.size();i++)
+        {
+            for(int j=0; j<data[i].size(); j++)
+                cout<<this->data[i][j];
+            cout<<endl;
+        }
+    }
+
+};
+
+
 Network read_network()
 {
 	Network Alarm;
@@ -155,42 +205,10 @@ Network read_network()
   	return Alarm;
 }
 
-vvs read_data(){
-    ifstream infile("records.dat");
-    string line;
-    vvs data;
-    if(infile.is_open())
-    {
-        while(getline(infile, line))
-        {
-              stringstream ss;
-              ss.str(line);
-              vector<string> temp;
-              string value;
-              while(ss >> value)
-                temp.push_back(value);
-
-              data.push_back(temp);
-
-        }
-        infile.close();
-    }
-    return data;
-}
-
-void print_data(vvs data)
-{
-    for(int i=0; i<data.size();i++)
-    {
-        for(int j=0; j<data[i].size(); j++)
-            cout<<data[i][j];
-        cout<<endl;
-    }
-}
 int main()
 {
     Network alarm = read_network();
     alarm.print();
-    vvs data = read_data();
-    print_data(data);
+    Data data("records.dat");
+    data.print();
 }
