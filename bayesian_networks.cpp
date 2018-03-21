@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define vvs vector<vector<string> >
 
 class Node{
 
@@ -154,8 +155,42 @@ Network read_network()
   	return Alarm;
 }
 
+vvs read_data(){
+    ifstream infile("records.dat");
+    string line;
+    vvs data;
+    if(infile.is_open())
+    {
+        while(getline(infile, line))
+        {
+              stringstream ss;
+              ss.str(line);
+              vector<string> temp;
+              string value;
+              while(ss >> value)
+                temp.push_back(value);
+
+              data.push_back(temp);
+
+        }
+        infile.close();
+    }
+    return data;
+}
+
+void print_data(vvs data)
+{
+    for(int i=0; i<data.size();i++)
+    {
+        for(int j=0; j<data[i].size(); j++)
+            cout<<data[i][j];
+        cout<<endl;
+    }
+}
 int main()
 {
     Network alarm = read_network();
     alarm.print();
+    vvs data = read_data();
+    print_data(data);
 }
