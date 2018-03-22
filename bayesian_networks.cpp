@@ -232,10 +232,65 @@ Network read_network()
   	return Alarm;
 }
 
+// void calc_prob_for_missing()
+// {
+//     return 0.5;
+// }
+void update_cpt(Node& node, Data& data, float c)
+{
+    vvs& d = data.get_data();
+
+    vector<int> parents_index;
+    vector<int> parents_num_values;
+
+    vector<Node*>& parents = node.get_Parents();
+    
+    int cpt_size = node.get_num_values();
+    for(int i=0; i<parents.size(); i++)
+    {
+        parents_index.push_back(parents[i]->get_index());
+        parents_num_values.push_back(parents[i]->get_num_values());
+        cpt_size *= parents_num_values[i];
+    }
+
+    vector<float> new_cpt(cpt_size, 0.0);
+    
+    for(int i=0; i<d.size(); i++)
+    {
+        int index = 0;
+        int old = 1;
+        for(int j=parents_num_values.size()-1; j>=0; j--)
+        {
+            // Todo what if value_of_parj = ?
+            string value_of_parj = d[i][parents_index[j]];
+            index += parents[j]->get_value_index(value_of_parj)*old;
+            old *= parents_num_values[j];
+            
+            cout<<parents[j]->get_name()<<" : "<<parents_num_values[j]<<" : "<<parents[j]->get_value_index(value_of_parj)<<endl;
+        }
+
+        string my_value = d[i][node.get_index()];
+        index += node.get_value_index(my_value)*old;
+        cout<<node.get_name()<<" : "<<node.get_index()<<" : "<<node.get_value_index(my_value)<<endl;
+
+        new_cpt[index] ++;
+    }
+    int total = d.size();
+    for(int i=0; i<new_cpt.size(); i++)
+        new_cpt[i] = (new_cpt[i] + c)/(c*total);
+
+    node.set_cpt(new_cpt);
+
+}
+// void maximization(Network &alarm, Data &data)
+// {
+
+// }
 int main()
 {
     Network alarm = read_network();
-    alarm.print();
     Data data("records.dat");
-    data.print();
+    Node* test = (alarm.search_node("\"LVEDVolume\""));
+    update_cpt(*test, data, 1.0);
+    test->print_cpt();
 }
