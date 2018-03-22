@@ -22,6 +22,11 @@ public:
             values_n[values[i]] = i;
 	}
 
+    int get_value_index(string v)
+    {
+        return values_n[v];
+    }
+
     string get_name(){
         return this->name;
     }
@@ -61,6 +66,11 @@ public:
         this->index = index;
     }
 
+    void print_cpt(){
+        for(int i=0;i<cpt.size(); i++)
+            cout<<cpt[i]<<" ";
+        cout<<endl;;
+    }
 	// TODO: add functions as needed
 };
 
