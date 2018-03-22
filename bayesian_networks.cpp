@@ -10,20 +10,38 @@ private:
 	int num_values;
 	vector<Node* > parents;
 	vector<Node* > childrens;
-	map<string, int> parents_index;
 	vector<float> cpt;;
+    int index;
+    map<string, int> values_n;
 public:
 	Node(string name, vector<string> values){
 		this->name = name;
 		this->values = values;
 		this->num_values = values.size();
+        for(int i=0; i<this->values.size();i++)
+            values_n[values[i]] = i;
 	}
+
     string get_name(){
         return this->name;
     }
 
+    int get_index(){
+        return this->index;
+    }
+
+
+    int get_num_values(){
+        return this->num_values;
+    }
+
     void set_Parents(vector<Node*> parents){
         this->parents = parents;
+    }
+
+    vector<Node *>& get_Parents()
+    {
+        return parents;
     }
 
     void add_child(Node* child){
@@ -39,6 +57,10 @@ public:
             cout<<parents[i]->get_name()<<" ";
         cout<<endl;;
     }
+    void set_index(int index){
+        this->index = index;
+    }
+
 	// TODO: add functions as needed
 };
 
