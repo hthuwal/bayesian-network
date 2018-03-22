@@ -144,6 +144,7 @@ Network read_network()
 
     if(myfile.is_open())
     {
+        cout<<"Reading Network\n";
     	while(!myfile.eof())
     	{
     		stringstream ss;
