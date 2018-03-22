@@ -92,12 +92,10 @@ class Data{
 
 private:
     vvs data;
-    vector<int> u_x;
-    vector<int> u_y;
-
 public:
     Data(string file)
     {
+        cout<<"Reading Data\n";
         ifstream infile(file);
         string line;
         if(infile.is_open())
@@ -116,15 +114,10 @@ public:
             }
             infile.close();
         }
-
-        for(int i=0; i<data.size(); i++)
-            for(int j=0; j<data.size(); j++)
-            {
-                u_x.push_back(i);
-                u_x.push_back(j);
-            }
     }
-
+    vvs& get_data(){
+        return this->data;
+    }
     void print()
     {
         for(int i=0; i<data.size();i++)
