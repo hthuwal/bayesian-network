@@ -71,6 +71,7 @@ public:
     void addNode(Node node)
     {
         (this->nodes).push_back(node);
+        nodes[nodes.size()-1].set_index(nodes.size()-1);
     }
 
     Node* search_node(string name){
