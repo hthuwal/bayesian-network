@@ -82,6 +82,11 @@ public:
     void set_cpt(vector<float> cpt){
         this->cpt = cpt;
     }
+    vf& get_cpt()
+    {
+        return this->cpt;
+    }
+
     void print(){
         cout<<this->name<<":";
         for(int i=0; i< parents.size(); i++)
@@ -328,7 +333,7 @@ void write_network(Network& net)
                     outfile<<"\ttable ";
                     vf &cpt = node->getcpt();
                     for(int i=0;i<cpt.size(); i++)
-                        outfile<<setprecision(2)<<std::fixed<<cpt[i]<<" ";
+                        outfile<<setprecision(4)<<std::fixed<<cpt[i]<<" ";
                     outfile<<";\n";
             }       
             else if(line == "")
@@ -400,7 +405,7 @@ string probs(int line, Node& node, Data& data)
     return vals[max_i];
 }
 
-void get_new_data3(Data& data, Network &net)
+void update_data(Data& data, Network &net)
 {
     vvs& d = data.get_data();
     vector<int>& u_x = data.get_ux();
@@ -522,13 +527,45 @@ void update_network(Network &alarm, Data &data)
         update_cpt(nodes[i], data, 0.001);
 }
 
-void em(Network &alarm, Data &data, int max_iter)
+float max_change(Network &old_net, Network &new_net)
 {
-    for(int i=0;i<max_iter;i++)
+    vector<Node>& old_nodes = old_net.get_nodes();
+    vector<Node>& new_nodes = new_net.get_nodes();
+    float change = 0.0;
+
+    for(int i=0; i<old_nodes.size(); i++)
     {
+        vf& old_cpt = old_nodes[i].get_cpt();
+        vf& new_cpt = new_nodes[i].get_cpt();
+
+        for(int j=0; j<old_cpt.size(); j++)
+        {
+            if (abs(old_cpt[j] - new_cpt[j]) > change)
+                change = abs(old_cpt[j] - new_cpt[j]);
+        }
+    }
+    return change;
+}
+
+void em(Network &alarm, Data &data, float threshold)
+{
+    int i = 0;
+    time_t begin_time = time(NULL);
+    while(true )
+    {
+        i++;
         printf("Step: %d\n", i);
-        get_new_data3(data, alarm);
+        update_data(data, alarm);
+        Network old_alarm(alarm);
         update_network(alarm, data);
+        float change = max_change(old_alarm, alarm);
+
+        // run untill threshold reached or time expired
+        time_t curr_time = time(NULL);
+        if(change < threshold || (curr_time - begin_time) > 60*9.5)
+        {
+            break;
+        }
     }
 }
 
@@ -544,10 +581,15 @@ void init(Network &alarm, Data &data)
 
 int main(int argc, char* argv[])
 {
-    Network alarm = read_network("alarm.bif");
-    Data data("records.dat");
+    if (argc != 3)
+    {        
+        cout<<"Program expects two commandline arguments";
+        exit(0);
+    }
+    Network alarm = read_network(argv[1]);
+    Data data(argv[2]);
     init(alarm, data);
     cout<<"Running Expectation Minimization\n";
-    em(alarm, data, 500);
+    em(alarm, data, 0.0000000001);
     write_network(alarm);
 }
