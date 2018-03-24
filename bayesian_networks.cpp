@@ -303,12 +303,12 @@ Network read_network(char *file)
   	return Alarm;
 }
 
-void write_network(Network& net)
+void write_network(Network& net, char* file)
 {
     Network Alarm;
     string line;
     int find=0;
-    ifstream myfile("alarm.bif"); 
+    ifstream myfile(file); 
     ofstream outfile("solved_alarm.bif");
     string temp;
     string name;
@@ -589,7 +589,7 @@ int main(int argc, char* argv[])
     Network alarm = read_network(argv[1]);
     Data data(argv[2]);
     init(alarm, data);
-    cout<<"Running Expectation Minimization\n";
+    cout<<"Running EM\n";
     em(alarm, data, 0.0000000001);
-    write_network(alarm);
+    write_network(alarm, argv[1]);
 }
